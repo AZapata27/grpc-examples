@@ -6,7 +6,7 @@
     <groupId>com.example</groupId>
     <artifactId>grpc-interfaces</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>Grpc-Interfaces</name>
+    <name>grpc-interfaces</name>
     <description>Grpc-Interfaces</description>
 
     <properties>

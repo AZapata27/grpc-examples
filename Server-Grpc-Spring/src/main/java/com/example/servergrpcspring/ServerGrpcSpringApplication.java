@@ -1,4 +1,4 @@
-package dev.andreszapata.servergrpcspring;
+package com.example.servergrpcspring;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

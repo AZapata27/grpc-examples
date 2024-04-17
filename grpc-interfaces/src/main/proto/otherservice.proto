@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package com.example;
+
+option java_multiple_files = true;
+option java_package = "com.example.lib";
+option java_outer_classname = "AnotherServiceProto";
+
+
+service OtherService {
+
+  rpc SayGoodbye (GoodbyeRequest) returns (GoodbyeReply) {
+  }
+}
+
+message GoodbyeRequest {
+  string name = 1;
+}
+
+message GoodbyeReply {
+  string message = 1;
+}
