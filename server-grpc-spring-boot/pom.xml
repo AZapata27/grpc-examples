@@ -30,6 +30,12 @@
             <artifactId>grpc-interfaces</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
+
+        <dependency>
+            <groupId>net.glxn</groupId>
+            <artifactId>qrgen</artifactId>
+            <version>1.4</version>
+        </dependency>
     </dependencies>
 
     <build>
