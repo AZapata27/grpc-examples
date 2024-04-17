@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>dev.andreszapata</groupId>
-    <artifactId>server-grpc-spring</artifactId>
+    <artifactId>server-grpc-spring-boot</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>Server-Grpc-Spring</name>
-    <description>Server-Grpc-Spring</description>
+    <name>server-grpc-spring-boot</name>
+    <description>Server-Grpc-Spring-Boot</description>
 
     <properties>
         <java.version>21</java.version>
