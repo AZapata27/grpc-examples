@@ -8,20 +8,18 @@
         <version>3.2.4</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>dev.andreszapata</groupId>
-    <artifactId>server-grpc-spring-boot</artifactId>
+    <groupId>com.example</groupId>
+    <artifactId>client-grpc-spring-boot</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>server-grpc-spring-boot</name>
-    <description>Server-Grpc-Spring-Boot</description>
-
+    <name>client-grpc-spring-boot</name>
+    <description>client-grpc-spring-boot</description>
     <properties>
         <java.version>21</java.version>
     </properties>
-
     <dependencies>
         <dependency>
             <groupId>net.devh</groupId>
-            <artifactId>grpc-server-spring-boot-starter</artifactId>
+            <artifactId>grpc-client-spring-boot-starter</artifactId>
             <version>3.1.0.RELEASE</version>
         </dependency>
 
@@ -29,12 +27,6 @@
             <groupId>com.example</groupId>
             <artifactId>grpc-interfaces</artifactId>
             <version>0.0.1-SNAPSHOT</version>
-        </dependency>
-
-        <dependency>
-            <groupId>net.glxn</groupId>
-            <artifactId>qrgen</artifactId>
-            <version>1.4</version>
         </dependency>
     </dependencies>
 

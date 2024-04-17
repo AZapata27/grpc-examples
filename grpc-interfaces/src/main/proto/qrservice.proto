@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package com.example;
+
+option java_multiple_files = true;
+option java_package = "com.example.lib";
+option java_outer_classname = "QRServiceProto";
+
+// Service definition for generating QR codes.
+service QRService {
+  // Generates a QR code for the given text.
+  rpc GenerateQRCode (QRCodeRequest) returns (QRCodeResponse) {
+  }
+}
+
+// The request message for generating a QR code.
+message QRCodeRequest {
+  string text = 1;
+  int32 size = 2;
+}
+
+// The response message containing the generated QR code.
+message QRCodeResponse {
+  bytes image_data = 1;
+}
