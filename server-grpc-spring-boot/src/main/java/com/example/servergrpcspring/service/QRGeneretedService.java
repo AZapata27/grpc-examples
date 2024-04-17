@@ -12,7 +12,7 @@ import net.glxn.qrgen.image.ImageType;
 import java.io.ByteArrayOutputStream;
 
 @GrpcService
-public class QRService extends QRServiceGrpc.QRServiceImplBase {
+public class QRGeneretedService extends QRServiceGrpc.QRServiceImplBase {
 
     @Override
     public void generateQRCode(QRCodeRequest request, StreamObserver<QRCodeResponse> responseObserver) {
