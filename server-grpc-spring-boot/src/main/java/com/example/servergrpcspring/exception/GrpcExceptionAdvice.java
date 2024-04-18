@@ -52,7 +52,7 @@ public class GrpcExceptionAdvice {
         metadata.put(Metadata.Key.of("reason", Metadata.ASCII_STRING_MARSHALLER), "An error occurred while generating the QR code");
         metadata.put(Metadata.Key.of("details", Metadata.ASCII_STRING_MARSHALLER), "Please check text");
 
-        return Status.NOT_FOUND.withDescription("QR Generating Exception")
+        return Status.CANCELLED.withDescription("QR Generating Exception")
                 .augmentDescription("Please check text")
                 .withCause(e)
                 .asException(metadata);
