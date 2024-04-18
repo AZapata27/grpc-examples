@@ -26,7 +26,7 @@ The server and client projects may contain additional configurations such as:
 
 - **Events**: To handle events related to the lifecycle of the server and clients.
 
-- **Security**: To secure gRPC communications through authentication and authorization.
+- **Security**: To secure gRPC communications through authentication and authorization with spring security and basic auth.
 
 ### Running Tests
 
