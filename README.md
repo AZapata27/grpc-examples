@@ -28,6 +28,8 @@ The server and client projects may contain additional configurations such as:
 
 - **Security**: To secure gRPC communications through authentication and authorization with spring security and basic auth.
 
+- **Testing**: Validates gRPC functionality through unit and integration testing.
+
 ### Running Tests
 
 The repository includes tests to ensure the correct operation of the gRPC services. These tests can be executed using appropriate testing tools for Spring and Quarkus projects.
