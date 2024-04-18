@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class HelloWordClientService {
 
-    @GrpcClient("myService")
+    @GrpcClient("security-grpc-server")
     private MyServiceBlockingStub myServiceStub;
 
     public String receiveGreeting(String name) {
