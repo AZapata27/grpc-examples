@@ -41,4 +41,42 @@ public class QRGeneretedService extends QRServiceGrpc.QRServiceImplBase {
         responseObserver.onCompleted();
 
     }
+
+    @Override
+    public StreamObserver<QRCodeRequest> generateQRCodeByStream(StreamObserver<QRCodeResponse> responseObserver) {
+
+        return new StreamObserver<QRCodeRequest>() {
+
+            @Override
+            public void onNext(QRCodeRequest request) {
+                try {
+                    // Convert the text to a QR code in PNG format
+                    ByteArrayOutputStream stream = QRCode.from(request.getText()).to(ImageType.PNG).stream();
+                    byte[] qrCodeBytes = stream.toByteArray();
+                    ByteString responseInBinary = ByteString.copyFrom(qrCodeBytes);
+
+                    QRCodeResponse response = QRCodeResponse.newBuilder()
+                            .setImageData(responseInBinary)
+                            .build();
+
+                    responseObserver.onNext(response);
+                } catch (Exception e) {
+                    responseObserver.onError(new QRGeneratedException(String.format("Error generated when processing QR text: %s", request.getText()), e));
+                }
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                responseObserver.onError(t);
+            }
+
+            @Override
+            public void onCompleted() {
+                // Complete the communication once all requests have been processed
+                responseObserver.onCompleted();
+            }
+        };
+    }
+
+
 }
