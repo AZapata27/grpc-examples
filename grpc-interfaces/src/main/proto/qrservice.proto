@@ -11,6 +11,10 @@ service QRService {
   // Generates a QR code for the given text.
   rpc GenerateQRCode (QRCodeRequest) returns (QRCodeResponse) {
   }
+
+  // Generates a QR code for the given text, in a stream operation.
+  rpc GenerateQRCodeByStream(stream QRCodeRequest) returns (stream QRCodeResponse){
+  }
 }
 
 // The request message for generating a QR code.
