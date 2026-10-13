@@ -6,6 +6,7 @@ import com.example.lib.MyServiceGrpc;
 import com.example.lib.QRCodeRequest;
 import com.example.lib.QRCodeResponse;
 import com.example.lib.QRServiceGrpc;
+import com.example.servergrpcspring.exception.GrpcExceptionMapper;
 import com.example.servergrpcspring.interceptor.LogGrpcInterceptor;
 import com.google.protobuf.ByteString;
 import io.grpc.ManagedChannel;
@@ -122,33 +123,70 @@ class GrpcServicesInProcessTest {
     }
 
     @Test
-    void generateQRCodeByStreamPropagatesErrorForEmptyText() throws Exception {
-        AtomicReference<Throwable> error = new AtomicReference<>();
-        CountDownLatch done = new CountDownLatch(1);
-
-        StreamObserver<QRCodeRequest> requests = QRServiceGrpc.newStub(channel)
-                .generateQRCodeByStream(new StreamObserver<>() {
-                    @Override
-                    public void onNext(QRCodeResponse value) {
-                    }
-
-                    @Override
-                    public void onError(Throwable t) {
-                        error.set(t);
-                        done.countDown();
-                    }
-
-                    @Override
-                    public void onCompleted() {
-                        done.countDown();
-                    }
-                });
+    void generateQRCodeByStreamMapsErrorForEmptyTextLikeTheUnaryAdvice() throws Exception {
+        StreamRecorder recorder = new StreamRecorder();
+        StreamObserver<QRCodeRequest> requests = QRServiceGrpc.newStub(channel).generateQRCodeByStream(recorder);
 
         requests.onNext(QRCodeRequest.newBuilder().setText("").build());
 
-        assertThat(done.await(5, TimeUnit.SECONDS)).isTrue();
-        assertThat(error.get()).isInstanceOf(StatusRuntimeException.class);
-        assertThat(Status.fromThrowable(error.get()).getCode()).isEqualTo(Status.Code.UNKNOWN);
+        assertThat(recorder.done.await(5, TimeUnit.SECONDS)).isTrue();
+        assertThat(recorder.completed).isFalse();
+        assertThat(recorder.responses).isEmpty();
+        assertQrGenerationError(recorder.error.get());
+    }
+
+    @Test
+    void generateQRCodeByStreamAnswersValidMessageThenFailsOnInvalidAndStopsProcessing() throws Exception {
+        StreamRecorder recorder = new StreamRecorder();
+        StreamObserver<QRCodeRequest> requests = QRServiceGrpc.newStub(channel).generateQRCodeByStream(recorder);
+
+        requests.onNext(QRCodeRequest.newBuilder().setText("valid").build());
+        requests.onNext(QRCodeRequest.newBuilder().setText("").build());
+        // Messages sent after the server failed the call must not be processed.
+        requests.onNext(QRCodeRequest.newBuilder().setText("ignored").build());
+        requests.onCompleted();
+
+        assertThat(recorder.done.await(5, TimeUnit.SECONDS)).isTrue();
+        assertThat(recorder.completed).isFalse();
+        assertThat(recorder.responses).hasSize(1);
+        assertIsPng(recorder.responses.get(0).getImageData());
+        assertQrGenerationError(recorder.error.get());
+    }
+
+    private static void assertQrGenerationError(Throwable error) {
+        assertThat(error).isInstanceOf(StatusRuntimeException.class);
+        StatusRuntimeException statusError = (StatusRuntimeException) error;
+        assertThat(statusError.getStatus().getCode()).isEqualTo(Status.Code.CANCELLED);
+        assertThat(statusError.getStatus().getDescription()).startsWith("QR Generating Exception");
+        assertThat(statusError.getTrailers()).isNotNull();
+        assertThat(statusError.getTrailers().get(GrpcExceptionMapper.REASON_KEY))
+                .isEqualTo("An error occurred while generating the QR code");
+        assertThat(statusError.getTrailers().get(GrpcExceptionMapper.DETAILS_KEY)).isEqualTo("Please check text");
+    }
+
+    /** Collects the server responses of a streaming call and signals when it terminates. */
+    private static final class StreamRecorder implements StreamObserver<QRCodeResponse> {
+        final List<QRCodeResponse> responses = new CopyOnWriteArrayList<>();
+        final AtomicReference<Throwable> error = new AtomicReference<>();
+        final CountDownLatch done = new CountDownLatch(1);
+        volatile boolean completed;
+
+        @Override
+        public void onNext(QRCodeResponse value) {
+            responses.add(value);
+        }
+
+        @Override
+        public void onError(Throwable t) {
+            error.set(t);
+            done.countDown();
+        }
+
+        @Override
+        public void onCompleted() {
+            completed = true;
+            done.countDown();
+        }
     }
 
     private static void assertIsPng(ByteString imageData) {
