@@ -1,6 +1,6 @@
 ### gRPC Examples with Spring and Quarkus
 
-[![CI](https://github.com/AZapata27/grpc-examples/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/AZapata27/grpc-examples/actions/workflows/ci.yml)
+[![CI](https://github.com/AZapata27/grpc-examples/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/AZapata27/grpc-examples/actions/workflows/ci.yml) [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/AZapata27/grpc-examples/badge)](https://scorecard.dev/viewer/?uri=github.com/AZapata27/grpc-examples)
 
 This repository contains gRPC examples built with Spring and Quarkus. The examples are organized into three projects:
 
