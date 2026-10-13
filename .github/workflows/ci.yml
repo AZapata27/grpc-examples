@@ -5,40 +5,47 @@ on:
     branches: [master]
   pull_request:
 
-permissions:
-  contents: read
+permissions: {}
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
+  # One leg per consumer module. Each leg first installs the shared protobuf contracts
+  # (grpc-interfaces) into the local Maven repository, so grpc-interfaces is compiled and
+  # validated in every leg as well.
   build:
-    name: Build and test
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
+    name: ${{ matrix.module }}
+    strategy:
+      fail-fast: false
+      matrix:
+        module:
+          - server-grpc-spring-boot
+          - client-grpc-spring-boot
+          - server-client-grpc-quarkus
+          - cloud-eureka-server
+    uses: AZapata27/reusable-workflows/.github/workflows/java-maven.yml@dd1bf38000c4f44c4939abe2ce0da8e1fac11993 # v1.0.0
+    permissions:
+      contents: read
+    with:
+      java-version: '21'
+      working-directory: ${{ matrix.module }}
+      pre-build-command: mvn -B -f grpc-interfaces/pom.xml install -DskipTests
+      maven-args: -B verify
+      report-name: test-reports-${{ matrix.module }}
 
-      - uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '21'
-          cache: maven
+  workflow-lint:
+    uses: AZapata27/reusable-workflows/.github/workflows/workflow-lint.yml@dd1bf38000c4f44c4939abe2ce0da8e1fac11993 # v1.0.0
+    permissions:
+      contents: read
 
-      # Shared protobuf contracts: generate the stubs and install them in the local
-      # Maven repository so the Spring Boot server and client can resolve them.
-      - name: grpc-interfaces (install)
-        run: mvn -B -ntp install
-        working-directory: grpc-interfaces
-
-      - name: server-grpc-spring-boot
-        run: mvn -B -ntp verify
-        working-directory: server-grpc-spring-boot
-
-      - name: client-grpc-spring-boot
-        run: mvn -B -ntp verify
-        working-directory: client-grpc-spring-boot
-
-      - name: server-client-grpc-quarkus
-        run: mvn -B -ntp verify
-        working-directory: server-client-grpc-quarkus
-
-      - name: cloud-eureka-server
-        run: mvn -B -ntp verify
-        working-directory: cloud-eureka-server
+  security:
+    uses: AZapata27/reusable-workflows/.github/workflows/security.yml@dd1bf38000c4f44c4939abe2ce0da8e1fac11993 # v1.0.0
+    permissions:
+      contents: read
+      actions: read            # CodeQL: workflow run metadata
+      security-events: write   # CodeQL: SARIF upload
+    with:
+      codeql-languages: '["java-kotlin", "actions"]'
+      codeql-build-mode: none
