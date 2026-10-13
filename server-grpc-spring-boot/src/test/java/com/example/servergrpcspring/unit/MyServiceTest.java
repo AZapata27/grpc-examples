@@ -5,23 +5,20 @@ import com.example.lib.HelloRequest;
 import com.example.servergrpcspring.service.HelloWordService;
 import io.grpc.internal.testing.StreamRecorder;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static org.assertj.core.api.Fail.fail;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SpringBootTest
-@SpringJUnitConfig(classes = { MyServiceUnitTestConfiguration.class })
+/**
+ * Pure unit test: calls the service implementation directly with a recording StreamObserver.
+ */
 class MyServiceTest {
 
-    @Autowired
-    private HelloWordService myService;
+    private final HelloWordService myService = new HelloWordService();
 
     @Test
     void testSayHello() throws Exception {
@@ -33,9 +30,7 @@ class MyServiceTest {
         StreamRecorder<HelloReply> responseObserver = StreamRecorder.create();
         myService.sayHello(request, responseObserver);
 
-        if (!responseObserver.awaitCompletion(5, TimeUnit.SECONDS)) {
-            fail("The call did not terminate in time");
-        }
+        assertTrue(responseObserver.awaitCompletion(5, TimeUnit.SECONDS), "The call did not terminate in time");
 
         assertNull(responseObserver.getError());
         List<HelloReply> results = responseObserver.getValues();
