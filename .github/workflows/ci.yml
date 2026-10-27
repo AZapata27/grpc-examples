@@ -27,7 +27,7 @@ jobs:
           - client-grpc-spring-boot
           - server-client-grpc-quarkus
           - cloud-eureka-server
-    uses: AZapata27/reusable-workflows/.github/workflows/java-maven.yml@dd1bf38000c4f44c4939abe2ce0da8e1fac11993 # v1.0.0
+    uses: AZapata27/reusable-workflows/.github/workflows/java-maven.yml@1f72ba8c03929704ea446e9df6a80ceb23675d51 # v1.0.1
     permissions:
       contents: read
     with:
@@ -38,12 +38,12 @@ jobs:
       report-name: test-reports-${{ matrix.module }}
 
   workflow-lint:
-    uses: AZapata27/reusable-workflows/.github/workflows/workflow-lint.yml@dd1bf38000c4f44c4939abe2ce0da8e1fac11993 # v1.0.0
+    uses: AZapata27/reusable-workflows/.github/workflows/workflow-lint.yml@1f72ba8c03929704ea446e9df6a80ceb23675d51 # v1.0.1
     permissions:
       contents: read
 
   security:
-    uses: AZapata27/reusable-workflows/.github/workflows/security.yml@dd1bf38000c4f44c4939abe2ce0da8e1fac11993 # v1.0.0
+    uses: AZapata27/reusable-workflows/.github/workflows/security.yml@1f72ba8c03929704ea446e9df6a80ceb23675d51 # v1.0.1
     permissions:
       contents: read
       actions: read            # CodeQL: workflow run metadata
